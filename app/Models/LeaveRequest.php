@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+use Database\Factories\LeaveRequestFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LeaveRequest extends Model
 {
+    /** @use HasFactory<LeaveRequestFactory> */
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
         'start_date',
@@ -22,8 +27,8 @@ class LeaveRequest extends Model
     protected function casts(): array
     {
         return [
-            'start_date' => 'date',
-            'end_date' => 'date',
+            'start_date'  => 'date',
+            'end_date'    => 'date',
             'approved_at' => 'datetime',
         ];
     }

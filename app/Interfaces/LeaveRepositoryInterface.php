@@ -16,4 +16,10 @@ interface LeaveRepositoryInterface
     public function getEmployeeLeaves(int $userId): Collection;
 
     public function getAll(): Collection;
+
+    public function hasOverlappingLeave(int $userId, string $startDate, string $endDate): bool;
+
+    public function getApprovedDaysInYear(int $userId, int $year): int;
+
+    public function findByIdAndUserId(int $id, int $userId): ?LeaveRequest;
 }

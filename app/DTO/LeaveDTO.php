@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-class LeaveDTO
+readonly class LeaveDTO
 {
     public function __construct(
         public readonly int $userId,

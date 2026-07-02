@@ -31,4 +31,35 @@ class AuthService
         $user->currentAccessToken()?->delete();
     }
 
+    public function handleProviderCallback(string $provider): array
+    {
+        try {
+            $socialUser = \Laravel\Socialite\Facades\Socialite::driver($provider)->stateless()->user();
+        } catch (\Exception $e) {
+            throw new \Exception('Failed to authenticate with ' . $provider);
+        }
+
+        /** @var User $user */
+        $user = User::firstOrCreate(
+            ['email' => $socialUser->getEmail()],
+            [
+                'name' => $socialUser->getName(),
+                'provider_name' => $provider,
+                'provider_id' => $socialUser->getId(),
+                'avatar' => $socialUser->getAvatar(),
+                'password' => null,
+            ]
+        );
+
+        if (!$user->hasAnyRole(['Employee', 'Admin'])) {
+            $user->assignRole('Employee');
+        }
+
+        $token = $user->createToken('auth-token');
+
+        return [
+            'user' => $user,
+            'token' => $token->plainTextToken,
+        ];
+    }
 }
