@@ -2,13 +2,13 @@
 
 namespace App\Service;
 
-use App\Interfaces\LeaveRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
 use App\DTO\LeaveDTO;
 use App\Enums\LeaveStatus;
+use App\Interfaces\LeaveRepositoryInterface;
 use App\Models\LeaveRequest;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 
 class LeaveService
 {
@@ -30,7 +30,7 @@ class LeaveService
 
         $approvedDays = $this->leaveRepository->getApprovedDaysInYear($dto->userId, $year);
         if (($approvedDays + $days) > 12) {
-            throw new Exception("Leave quota exceeded. You have " . (12 - $approvedDays) . " days left this year.");
+            throw new Exception('Leave quota exceeded. You have '.(12 - $approvedDays).' days left this year.');
         }
 
         if ($this->leaveRepository->hasOverlappingLeave($dto->userId, $dto->startDate, $dto->endDate)) {
@@ -51,7 +51,7 @@ class LeaveService
     public function approve(int $leaveId, int $adminId): LeaveRequest
     {
         $leave = $this->leaveRepository->findById($leaveId);
-        if (!$leave) {
+        if (! $leave) {
             throw new Exception('Leave request not found.');
         }
 
@@ -77,7 +77,7 @@ class LeaveService
     public function reject(int $leaveId, int $adminId): LeaveRequest
     {
         $leave = $this->leaveRepository->findById($leaveId);
-        if (!$leave) {
+        if (! $leave) {
             throw new Exception('Leave request not found.');
         }
 
@@ -101,7 +101,7 @@ class LeaveService
     {
         $leave = $this->leaveRepository->findByIdAndUserId($leaveId, $userId);
 
-        if (!$leave) {
+        if (! $leave) {
             throw new Exception('Leave request not found.');
         }
 

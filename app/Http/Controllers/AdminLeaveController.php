@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
 use App\Service\LeaveService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Exception;
 
 class AdminLeaveController extends Controller
 {

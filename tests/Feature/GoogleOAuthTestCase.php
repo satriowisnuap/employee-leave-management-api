@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\GoogleProvider;
 use Tests\TestCase;
 
 /**
@@ -27,9 +27,9 @@ abstract class GoogleOAuthTestCase extends TestCase
      * Helper: buat mock SocialiteUser yang akan digunakan pada setiap test callback.
      */
     protected function mockSocialiteUser(
-        string $email  = 'google.user@example.com',
-        string $name   = 'Google User',
-        string $id     = 'google-provider-id-123',
+        string $email = 'google.user@example.com',
+        string $name = 'Google User',
+        string $id = 'google-provider-id-123',
         string $avatar = 'https://lh3.googleusercontent.com/photo.jpg'
     ): SocialiteUser {
         $socialiteUser = $this->createMock(SocialiteUser::class);
@@ -47,12 +47,12 @@ abstract class GoogleOAuthTestCase extends TestCase
      */
     protected function fakeSocialite(SocialiteUser $socialiteUser): void
     {
-        $provider = $this->createMock(\Laravel\Socialite\Two\GoogleProvider::class);
+        $provider = $this->createMock(GoogleProvider::class);
         $provider->method('stateless')->willReturnSelf();
         $provider->method('user')->willReturn($socialiteUser);
 
         Socialite::shouldReceive('driver')
-                 ->with('google')
-                 ->andReturn($provider);
+            ->with('google')
+            ->andReturn($provider);
     }
 }

@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\LeaveStatus;
 use App\Models\LeaveRequest;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,20 +18,20 @@ class LeaveRequestFactory extends Factory
     public function definition(): array
     {
         $start = fake()->dateTimeBetween('now', '+30 days');
-        $end   = fake()->dateTimeBetween($start, '+35 days');
+        $end = fake()->dateTimeBetween($start, '+35 days');
 
-        $startDate = \Carbon\Carbon::instance($start);
-        $endDate   = \Carbon\Carbon::instance($end);
-        $days      = (int) $startDate->diffInDays($endDate) + 1;
+        $startDate = Carbon::instance($start);
+        $endDate = Carbon::instance($end);
+        $days = (int) $startDate->diffInDays($endDate) + 1;
 
         return [
-            'user_id'    => User::factory(),
+            'user_id' => User::factory(),
             'start_date' => $startDate->toDateString(),
-            'end_date'   => $endDate->toDateString(),
-            'days'       => $days,
-            'reason'     => fake()->sentence(),
-            'attachment'  => 'attachments/test.pdf',
-            'status'     => LeaveStatus::Pending->value,
+            'end_date' => $endDate->toDateString(),
+            'days' => $days,
+            'reason' => fake()->sentence(),
+            'attachment' => 'attachments/test.pdf',
+            'status' => LeaveStatus::Pending->value,
             'approved_by' => null,
             'approved_at' => null,
         ];
@@ -44,7 +45,7 @@ class LeaveRequestFactory extends Factory
     public function approved(): static
     {
         return $this->state([
-            'status'     => LeaveStatus::Approved->value,
+            'status' => LeaveStatus::Approved->value,
             'approved_at' => now(),
         ]);
     }
@@ -52,7 +53,7 @@ class LeaveRequestFactory extends Factory
     public function rejected(): static
     {
         return $this->state([
-            'status'      => LeaveStatus::Rejected->value,
+            'status' => LeaveStatus::Rejected->value,
             'approved_at' => now(),
         ]);
     }

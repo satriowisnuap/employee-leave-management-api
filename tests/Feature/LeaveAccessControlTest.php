@@ -32,8 +32,8 @@ class LeaveAccessControlTest extends TestCase
     {
         $response = $this->postJson('/api/leaves', [
             'start_date' => now()->addDay()->toDateString(),
-            'end_date'   => now()->addDays(3)->toDateString(),
-            'reason'     => 'Family vacation',
+            'end_date' => now()->addDays(3)->toDateString(),
+            'reason' => 'Family vacation',
         ]);
 
         $response->assertStatus(401);
@@ -53,11 +53,11 @@ class LeaveAccessControlTest extends TestCase
         $token = $admin->createToken('auth-token')->plainTextToken;
 
         $response = $this->withHeader('Authorization', "Bearer $token")
-                         ->postJson('/api/leaves', [
-                             'start_date' => now()->addDay()->toDateString(),
-                             'end_date'   => now()->addDays(3)->toDateString(),
-                             'reason'     => 'Family vacation',
-                         ]);
+            ->postJson('/api/leaves', [
+                'start_date' => now()->addDay()->toDateString(),
+                'end_date' => now()->addDays(3)->toDateString(),
+                'reason' => 'Family vacation',
+            ]);
 
         $response->assertStatus(403);
     }

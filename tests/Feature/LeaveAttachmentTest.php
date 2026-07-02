@@ -36,20 +36,20 @@ class LeaveAttachmentTest extends TestCase
     public function test_attachment_tersimpan_di_storage_dan_database(): void
     {
         $employee = User::factory()->employee()->create();
-        $token    = $employee->createToken('auth-token')->plainTextToken;
+        $token = $employee->createToken('auth-token')->plainTextToken;
 
         $file = UploadedFile::fake()->create('surat_cuti.pdf', 150, 'application/pdf');
 
         $response = $this->withHeader('Authorization', "Bearer $token")
-                         ->postJson('/api/leaves', [
-                             'start_date' => now()->addDay()->toDateString(),
-                             'end_date'   => now()->addDays(3)->toDateString(),
-                             'reason'     => 'Medical check-up',
-                             'attachment' => $file,
-                         ]);
+            ->postJson('/api/leaves', [
+                'start_date' => now()->addDay()->toDateString(),
+                'end_date' => now()->addDays(3)->toDateString(),
+                'reason' => 'Medical check-up',
+                'attachment' => $file,
+            ]);
 
         $response->assertStatus(201)
-                 ->assertJsonPath('success', true);
+            ->assertJsonPath('success', true);
 
         // Ambil path yang disimpan dari response
         $storedPath = $response->json('data.attachment');
@@ -59,9 +59,9 @@ class LeaveAttachmentTest extends TestCase
 
         // Pastikan database menyimpan path yang sama
         $this->assertDatabaseHas('leave_requests', [
-            'user_id'    => $employee->id,
+            'user_id' => $employee->id,
             'attachment' => $storedPath,
-            'status'     => LeaveStatus::Pending->value,
+            'status' => LeaveStatus::Pending->value,
         ]);
     }
 
@@ -72,20 +72,20 @@ class LeaveAttachmentTest extends TestCase
     public function test_attachment_berupa_gambar_tersimpan_di_storage_dan_database(): void
     {
         $employee = User::factory()->employee()->create();
-        $token    = $employee->createToken('auth-token')->plainTextToken;
+        $token = $employee->createToken('auth-token')->plainTextToken;
 
         $file = UploadedFile::fake()->image('bukti_cuti.jpg');
 
         $response = $this->withHeader('Authorization', "Bearer $token")
-                         ->postJson('/api/leaves', [
-                             'start_date' => now()->addDays(5)->toDateString(),
-                             'end_date'   => now()->addDays(7)->toDateString(),
-                             'reason'     => 'Personal leave',
-                             'attachment' => $file,
-                         ]);
+            ->postJson('/api/leaves', [
+                'start_date' => now()->addDays(5)->toDateString(),
+                'end_date' => now()->addDays(7)->toDateString(),
+                'reason' => 'Personal leave',
+                'attachment' => $file,
+            ]);
 
         $response->assertStatus(201)
-                 ->assertJsonPath('success', true);
+            ->assertJsonPath('success', true);
 
         $storedPath = $response->json('data.attachment');
 
@@ -94,7 +94,7 @@ class LeaveAttachmentTest extends TestCase
 
         // Path harus ada di database
         $this->assertDatabaseHas('leave_requests', [
-            'user_id'    => $employee->id,
+            'user_id' => $employee->id,
             'attachment' => $storedPath,
         ]);
     }
@@ -106,17 +106,17 @@ class LeaveAttachmentTest extends TestCase
     public function test_path_attachment_dimulai_dengan_direktori_attachments(): void
     {
         $employee = User::factory()->employee()->create();
-        $token    = $employee->createToken('auth-token')->plainTextToken;
+        $token = $employee->createToken('auth-token')->plainTextToken;
 
         $file = UploadedFile::fake()->create('dokumen.pdf', 50, 'application/pdf');
 
         $response = $this->withHeader('Authorization', "Bearer $token")
-                         ->postJson('/api/leaves', [
-                             'start_date' => now()->addDays(2)->toDateString(),
-                             'end_date'   => now()->addDays(4)->toDateString(),
-                             'reason'     => 'Annual leave',
-                             'attachment' => $file,
-                         ]);
+            ->postJson('/api/leaves', [
+                'start_date' => now()->addDays(2)->toDateString(),
+                'end_date' => now()->addDays(4)->toDateString(),
+                'reason' => 'Annual leave',
+                'attachment' => $file,
+            ]);
 
         $response->assertStatus(201);
 

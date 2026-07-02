@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+use App\Models\User;
 use App\Service\AuthService;
-use Illuminate\Http\Request;
-use Laravel\Socialite\Facades\Socialite;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\AbstractProvider;
 
 class AuthController extends Controller
 {
@@ -19,21 +23,22 @@ class AuthController extends Controller
     {
         try {
             $data = $this->authService->login($request->validated());
+
             return ApiResponse::success($data, 'Login successful');
         } catch (Exception $e) {
             return ApiResponse::error($e->getMessage(), 401);
         }
     }
 
-    public function register(\App\Http\Requests\RegisterRequest $request)
+    public function register(RegisterRequest $request)
     {
         try {
-            $user = \App\Models\User::create([
+            $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+                'password' => Hash::make($request->password),
             ]);
-            
+
             $user->assignRole('Employee');
 
             return ApiResponse::success($user, 'Registration successful', 201);
@@ -45,18 +50,23 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $this->authService->logout($request->user());
+
         return ApiResponse::success(null, 'Logout successful');
     }
 
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->stateless()->redirect();
+        /** @var AbstractProvider $driver */
+        $driver = Socialite::driver('google');
+
+        return $driver->stateless()->redirect();
     }
 
     public function handleGoogleCallback()
     {
         try {
             $data = $this->authService->handleProviderCallback('google');
+
             return ApiResponse::success($data, 'Google Login successful');
         } catch (Exception $e) {
             return ApiResponse::error($e->getMessage(), 401);

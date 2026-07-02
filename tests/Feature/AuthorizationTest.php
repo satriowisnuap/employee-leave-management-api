@@ -24,33 +24,33 @@ class AuthorizationTest extends TestCase
     public function test_employee_tidak_dapat_akses_endpoint_admin(): void
     {
         $employee = User::factory()->employee()->create();
-        $token    = $employee->createToken('auth-token')->plainTextToken;
+        $token = $employee->createToken('auth-token')->plainTextToken;
 
         $this->withHeader('Authorization', "Bearer $token")
-             ->getJson('/api/admin/leaves')
-             ->assertForbidden();
+            ->getJson('/api/admin/leaves')
+            ->assertForbidden();
     }
 
     public function test_employee_tidak_dapat_approve_cuti(): void
     {
         $employee = User::factory()->employee()->create();
-        $leave    = LeaveRequest::factory()->create(['user_id' => $employee->id]);
-        $token    = $employee->createToken('auth-token')->plainTextToken;
+        $leave = LeaveRequest::factory()->create(['user_id' => $employee->id]);
+        $token = $employee->createToken('auth-token')->plainTextToken;
 
         $this->withHeader('Authorization', "Bearer $token")
-             ->patchJson("/api/admin/leaves/{$leave->id}/approve")
-             ->assertForbidden();
+            ->patchJson("/api/admin/leaves/{$leave->id}/approve")
+            ->assertForbidden();
     }
 
     public function test_employee_tidak_dapat_reject_cuti(): void
     {
         $employee = User::factory()->employee()->create();
-        $leave    = LeaveRequest::factory()->create(['user_id' => $employee->id]);
-        $token    = $employee->createToken('auth-token')->plainTextToken;
+        $leave = LeaveRequest::factory()->create(['user_id' => $employee->id]);
+        $token = $employee->createToken('auth-token')->plainTextToken;
 
         $this->withHeader('Authorization', "Bearer $token")
-             ->patchJson("/api/admin/leaves/{$leave->id}/reject")
-             ->assertForbidden();
+            ->patchJson("/api/admin/leaves/{$leave->id}/reject")
+            ->assertForbidden();
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -63,14 +63,14 @@ class AuthorizationTest extends TestCase
         $token = $admin->createToken('auth-token')->plainTextToken;
 
         $this->withHeader('Authorization', "Bearer $token")
-             ->getJson('/api/admin/leaves')
-             ->assertOk()
-             ->assertJsonPath('success', true);
+            ->getJson('/api/admin/leaves')
+            ->assertOk()
+            ->assertJsonPath('success', true);
     }
 
     public function test_admin_dapat_melihat_seluruh_pengajuan_cuti(): void
     {
-        $admin    = User::factory()->admin()->create();
+        $admin = User::factory()->admin()->create();
         $employee = User::factory()->employee()->create();
 
         LeaveRequest::factory()->count(3)->create(['user_id' => $employee->id]);
@@ -78,11 +78,11 @@ class AuthorizationTest extends TestCase
         $token = $admin->createToken('auth-token')->plainTextToken;
 
         $response = $this->withHeader('Authorization', "Bearer $token")
-                         ->getJson('/api/admin/leaves');
+            ->getJson('/api/admin/leaves');
 
         $response->assertOk()
-                 ->assertJsonPath('success', true)
-                 ->assertJsonCount(3, 'data');
+            ->assertJsonPath('success', true)
+            ->assertJsonCount(3, 'data');
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -91,44 +91,44 @@ class AuthorizationTest extends TestCase
 
     public function test_employee_hanya_melihat_cuti_miliknya(): void
     {
-        $emp1  = User::factory()->employee()->create();
-        $emp2  = User::factory()->employee()->create();
+        $emp1 = User::factory()->employee()->create();
+        $emp2 = User::factory()->employee()->create();
         $token = $emp1->createToken('auth-token')->plainTextToken;
 
         LeaveRequest::factory()->count(2)->create(['user_id' => $emp1->id]);
         LeaveRequest::factory()->count(3)->create(['user_id' => $emp2->id]);
 
         $response = $this->withHeader('Authorization', "Bearer $token")
-                         ->getJson('/api/leaves');
+            ->getJson('/api/leaves');
 
         $response->assertOk()
-                 ->assertJsonCount(2, 'data');
+            ->assertJsonCount(2, 'data');
     }
 
     public function test_employee_tidak_dapat_melihat_cuti_milik_user_lain(): void
     {
-        $emp1  = User::factory()->employee()->create();
-        $emp2  = User::factory()->employee()->create();
+        $emp1 = User::factory()->employee()->create();
+        $emp2 = User::factory()->employee()->create();
         $leave = LeaveRequest::factory()->create(['user_id' => $emp2->id]);
 
         $token = $emp1->createToken('auth-token')->plainTextToken;
 
         $this->withHeader('Authorization', "Bearer $token")
-             ->getJson("/api/leaves/{$leave->id}")
-             ->assertStatus(404);
+            ->getJson("/api/leaves/{$leave->id}")
+            ->assertStatus(404);
     }
 
     public function test_employee_dapat_melihat_detail_cutinya_sendiri(): void
     {
         $employee = User::factory()->employee()->create();
-        $leave    = LeaveRequest::factory()->create(['user_id' => $employee->id]);
+        $leave = LeaveRequest::factory()->create(['user_id' => $employee->id]);
 
         $token = $employee->createToken('auth-token')->plainTextToken;
 
         $this->withHeader('Authorization', "Bearer $token")
-             ->getJson("/api/leaves/{$leave->id}")
-             ->assertOk()
-             ->assertJsonPath('success', true)
-             ->assertJsonPath('data.id', $leave->id);
+            ->getJson("/api/leaves/{$leave->id}")
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.id', $leave->id);
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminLeaveController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LeaveController;
-use App\Http\Controllers\AdminLeaveController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,7 +13,7 @@ use App\Http\Controllers\AdminLeaveController;
 */
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login',    [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login']);
 
     Route::get('/google/redirect', [AuthController::class, 'redirectToGoogle']);
     Route::get('/google/callback', [AuthController::class, 'handleGoogleCallback']);
@@ -40,7 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     |----------------------------------------------------------------------
     */
     Route::middleware('role:Employee|Admin')->group(function () {
-        Route::get('/leaves',      [LeaveController::class, 'index']);
+        Route::get('/leaves', [LeaveController::class, 'index']);
         Route::get('/leaves/{id}', [LeaveController::class, 'show']);
     });
 
@@ -54,8 +54,8 @@ Route::middleware('auth:sanctum')->group(function () {
     |----------------------------------------------------------------------
     */
     Route::prefix('admin')->middleware('role:Admin')->group(function () {
-        Route::get('/leaves',                    [AdminLeaveController::class, 'index']);
-        Route::patch('/leaves/{id}/approve',     [AdminLeaveController::class, 'approve']);
-        Route::patch('/leaves/{id}/reject',      [AdminLeaveController::class, 'reject']);
+        Route::get('/leaves', [AdminLeaveController::class, 'index']);
+        Route::patch('/leaves/{id}/approve', [AdminLeaveController::class, 'approve']);
+        Route::patch('/leaves/{id}/reject', [AdminLeaveController::class, 'reject']);
     });
 });

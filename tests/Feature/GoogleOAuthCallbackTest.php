@@ -16,9 +16,9 @@ class GoogleOAuthCallbackTest extends GoogleOAuthTestCase
     public function test_callback_membuat_user_baru_jika_belum_ada(): void
     {
         $socialiteUser = $this->mockSocialiteUser(
-            email:  'newgoogle@example.com',
-            name:   'New Google User',
-            id:     'google-uid-new-001',
+            email: 'newgoogle@example.com',
+            name: 'New Google User',
+            id: 'google-uid-new-001',
             avatar: 'https://lh3.googleusercontent.com/new.jpg'
         );
         $this->fakeSocialite($socialiteUser);
@@ -26,18 +26,18 @@ class GoogleOAuthCallbackTest extends GoogleOAuthTestCase
         $response = $this->getJson('/api/auth/google/callback');
 
         $response->assertOk()
-                 ->assertJsonPath('success', true)
-                 ->assertJsonPath('message', 'Google Login successful')
-                 ->assertJsonStructure([
-                     'data' => ['token', 'user'],
-                 ]);
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'Google Login successful')
+            ->assertJsonStructure([
+                'data' => ['token', 'user'],
+            ]);
 
         // User harus ada di database
         $this->assertDatabaseHas('users', [
-            'email'         => 'newgoogle@example.com',
-            'name'          => 'New Google User',
+            'email' => 'newgoogle@example.com',
+            'name' => 'New Google User',
             'provider_name' => 'google',
-            'provider_id'   => 'google-uid-new-001',
+            'provider_id' => 'google-uid-new-001',
         ]);
     }
 
@@ -49,15 +49,15 @@ class GoogleOAuthCallbackTest extends GoogleOAuthTestCase
     {
         // Buat user yang sudah ada sebelumnya
         $existingUser = User::factory()->employee()->create([
-            'email'         => 'existing.google@example.com',
+            'email' => 'existing.google@example.com',
             'provider_name' => 'google',
-            'provider_id'   => 'google-uid-existing-001',
+            'provider_id' => 'google-uid-existing-001',
         ]);
 
         $socialiteUser = $this->mockSocialiteUser(
-            email:  'existing.google@example.com',
-            name:   $existingUser->name,
-            id:     'google-uid-existing-001',
+            email: 'existing.google@example.com',
+            name: $existingUser->name,
+            id: 'google-uid-existing-001',
             avatar: 'https://lh3.googleusercontent.com/existing.jpg'
         );
         $this->fakeSocialite($socialiteUser);
@@ -65,10 +65,10 @@ class GoogleOAuthCallbackTest extends GoogleOAuthTestCase
         $response = $this->getJson('/api/auth/google/callback');
 
         $response->assertOk()
-                 ->assertJsonPath('success', true)
-                 ->assertJsonStructure([
-                     'data' => ['token', 'user'],
-                 ]);
+            ->assertJsonPath('success', true)
+            ->assertJsonStructure([
+                'data' => ['token', 'user'],
+            ]);
 
         // Tidak boleh ada duplikat user
         $this->assertDatabaseCount('users', 1);
@@ -81,7 +81,7 @@ class GoogleOAuthCallbackTest extends GoogleOAuthTestCase
     {
         $socialiteUser = $this->mockSocialiteUser(
             email: 'tokentest.google@example.com',
-            id:    'google-uid-token-001'
+            id: 'google-uid-token-001'
         );
         $this->fakeSocialite($socialiteUser);
 
@@ -99,7 +99,7 @@ class GoogleOAuthCallbackTest extends GoogleOAuthTestCase
         // Pastikan personal_access_tokens memiliki record untuk user ini
         $user = User::where('email', 'tokentest.google@example.com')->first();
         $this->assertDatabaseHas('personal_access_tokens', [
-            'tokenable_id'   => $user->id,
+            'tokenable_id' => $user->id,
             'tokenable_type' => User::class,
         ]);
     }
@@ -111,7 +111,7 @@ class GoogleOAuthCallbackTest extends GoogleOAuthTestCase
     {
         $socialiteUser = $this->mockSocialiteUser(
             email: 'roleccheck.google@example.com',
-            id:    'google-uid-role-001'
+            id: 'google-uid-role-001'
         );
         $this->fakeSocialite($socialiteUser);
 
@@ -131,24 +131,24 @@ class GoogleOAuthCallbackTest extends GoogleOAuthTestCase
     {
         $socialiteUser = $this->mockSocialiteUser(
             email: 'formattest.google@example.com',
-            id:    'google-uid-format-001'
+            id: 'google-uid-format-001'
         );
         $this->fakeSocialite($socialiteUser);
 
         $response = $this->getJson('/api/auth/google/callback');
 
         $response->assertOk()
-                 ->assertJsonStructure([
-                     'success',
-                     'message',
-                     'data' => [
-                         'token',
-                         'user' => [
-                             'id',
-                             'name',
-                             'email',
-                         ],
-                     ],
-                 ]);
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'token',
+                    'user' => [
+                        'id',
+                        'name',
+                        'email',
+                    ],
+                ],
+            ]);
     }
 }

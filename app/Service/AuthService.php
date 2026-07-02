@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\NewAccessToken;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthService
 {
@@ -34,9 +35,9 @@ class AuthService
     public function handleProviderCallback(string $provider): array
     {
         try {
-            $socialUser = \Laravel\Socialite\Facades\Socialite::driver($provider)->stateless()->user();
+            $socialUser = Socialite::driver($provider)->stateless()->user();
         } catch (\Exception $e) {
-            throw new \Exception('Failed to authenticate with ' . $provider);
+            throw new \Exception('Failed to authenticate with '.$provider);
         }
 
         /** @var User $user */
@@ -51,7 +52,7 @@ class AuthService
             ]
         );
 
-        if (!$user->hasAnyRole(['Employee', 'Admin'])) {
+        if (! $user->hasAnyRole(['Employee', 'Admin'])) {
             $user->assignRole('Employee');
         }
 

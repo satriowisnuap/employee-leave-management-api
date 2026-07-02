@@ -23,15 +23,15 @@ class AuthenticationTest extends TestCase
     public function test_register_user_berhasil(): void
     {
         $response = $this->postJson('/api/auth/register', [
-            'name'                  => 'New Employee',
-            'email'                 => 'newuser@example.com',
-            'password'              => 'password123',
+            'name' => 'New Employee',
+            'email' => 'newuser@example.com',
+            'password' => 'password123',
             'password_confirmation' => 'password123',
         ]);
 
         $response->assertStatus(201)
-                 ->assertJsonPath('success', true)
-                 ->assertJsonPath('message', 'Registration successful');
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'Registration successful');
 
         $this->assertDatabaseHas('users', ['email' => 'newuser@example.com']);
     }
@@ -47,25 +47,25 @@ class AuthenticationTest extends TestCase
         ]);
 
         $response = $this->postJson('/api/auth/login', [
-            'email'    => 'emp@example.com',
+            'email' => 'emp@example.com',
             'password' => 'password',
         ]);
 
         $response->assertOk()
-                 ->assertJsonPath('success', true)
-                 ->assertJsonPath('message', 'Login successful')
-                 ->assertJsonStructure(['data' => ['token', 'user']]);
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'Login successful')
+            ->assertJsonStructure(['data' => ['token', 'user']]);
     }
 
     public function test_login_gagal_jika_email_salah(): void
     {
         $response = $this->postJson('/api/auth/login', [
-            'email'    => 'notexist@example.com',
+            'email' => 'notexist@example.com',
             'password' => 'password',
         ]);
 
         $response->assertStatus(401)
-                 ->assertJsonPath('success', false);
+            ->assertJsonPath('success', false);
     }
 
     public function test_login_gagal_jika_password_salah(): void
@@ -73,12 +73,12 @@ class AuthenticationTest extends TestCase
         User::factory()->employee()->create(['email' => 'emp2@example.com']);
 
         $response = $this->postJson('/api/auth/login', [
-            'email'    => 'emp2@example.com',
+            'email' => 'emp2@example.com',
             'password' => 'wrong-password',
         ]);
 
         $response->assertStatus(401)
-                 ->assertJsonPath('success', false);
+            ->assertJsonPath('success', false);
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -87,15 +87,15 @@ class AuthenticationTest extends TestCase
 
     public function test_logout_berhasil(): void
     {
-        $user  = User::factory()->employee()->create();
+        $user = User::factory()->employee()->create();
         $token = $user->createToken('auth-token')->plainTextToken;
 
         $response = $this->withHeader('Authorization', "Bearer $token")
-                         ->postJson('/api/auth/logout');
+            ->postJson('/api/auth/logout');
 
         $response->assertOk()
-                 ->assertJsonPath('success', true)
-                 ->assertJsonPath('message', 'Logout successful');
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'Logout successful');
     }
 
     // ─────────────────────────────────────────────────────────────────

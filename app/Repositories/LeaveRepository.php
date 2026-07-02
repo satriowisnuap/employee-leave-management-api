@@ -46,7 +46,7 @@ class LeaveRepository implements LeaveRepositoryInterface
                     ->orWhereBetween('end_date', [$startDate, $endDate])
                     ->orWhere(function ($q) use ($startDate, $endDate) {
                         $q->where('start_date', '<=', $startDate)
-                          ->where('end_date', '>=', $endDate);
+                            ->where('end_date', '>=', $endDate);
                     });
             })
             ->exists();

@@ -6,9 +6,9 @@ use App\DTO\LeaveDTO;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\StoreLeaveRequest;
 use App\Service\LeaveService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Exception;
 
 class LeaveController extends Controller
 {
